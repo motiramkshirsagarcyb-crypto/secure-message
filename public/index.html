@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    margin: 0;
+    padding: 40px 20px;
+    color: #1f2937;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+    resize: vertical;
+}
+input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+}
+}
+</style>
+
+
+    <meta charset="UTF-8">
+    <title>Password Protected Messaging</title>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Password Protected Messaging</h1>
+
+    <h2>Send a Protected Message</h2>
+<textarea
+    id="message"
+    rows="8"
+    placeholder="Enter your message"></textarea>
+    <br><br>
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Enter password">
+
+    <br><br>
+
+    <button onclick="createMessage()">
+        Create Protected Message
+    </button>
+
+    <p id="result"></p>
+
+    <script>
+        async function createMessage() {
+
+            const message = document.getElementById("message").value;
+            const password = document.getElementById("password").value;
+            const result = document.getElementById("result");
+
+            if (!message || !password) {
+                result.textContent = "Please enter a message and password.";
+                return;
+            }
+
+            result.textContent = "Creating protected message...";
+
+            try {
+                const response = await fetch("/api/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    result.textContent = data.error || "Something went wrong.";
+                    return;
+                }
+
+                const link =
+    window.location.origin +
+    "/receive.html?id=" +
+    encodeURIComponent(data.id);
+
+result.innerHTML =
+    "Message created!<br><br>" +
+    "<a href='" + link + "'>" +
+    link +
+    "</a>";
+
+            } catch (error) {
+                result.textContent =
+                    "Could not connect to the server.";
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

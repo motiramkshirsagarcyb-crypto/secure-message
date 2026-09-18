@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    margin: 0;
+    padding: 40px 20px;
+    color: #1f2937;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.warning {
+    padding: 15px 18px;
+    border: 1px solid #dc2626;
+    background: #fef2f2;
+    color: #991b1b;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.5;
+}
+    padding: 15px;
+    border: 1px solid #dc2626;
+    background: #fef2f2;
+    color: #991b1b;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+#message {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+#timer {
+    font-weight: bold;
+    margin-top: 15px;
+}
+</style>    <meta charset="UTF-8">
+    <title>Receive Protected Message</title>
+</head>
+
+<body oncontextmenu="return false" oncopy="return false" onselectstart="return false">
+<div class="container">
+<div style="padding: 15px; border: 2px solid red; margin-bottom: 20px;">
+    ⚠️ <strong>WARNING:</strong> Do not screenshot, screen record, copy, or share this message.
+    This message is confidential and will automatically expire.
+</div>
+
+    <h1>🔐 Receive Protected Message</h1>
+
+    <p>Enter the Message ID you received.</p>
+
+    <input
+        type="text"
+        id="messageId"
+        placeholder="Message ID"
+        size="50">
+
+    <br><br>
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Password">
+
+    <br><br>
+
+    <button onclick="unlockMessage()">
+        Unlock Message
+    </button>
+
+    <h2 id="messageTitle"></h2>
+
+    <p id="message"></p>
+
+    <p id="timer"></p>
+
+    <script>
+
+        let timerInterval;
+const urlParams = new URLSearchParams(window.location.search);
+
+window.addEventListener("DOMContentLoaded", () => {
+    const id = urlParams.get("id");
+
+    if (id) {
+        document.getElementById("messageId").value = id;
+    }
+});
+
+        async function unlockMessage() {
+
+            const urlParams = new URLSearchParams(window.location.search);
+
+const id =
+    urlParams.get("id") ||
+    document.getElementById("messageId").value.trim();
+
+if (urlParams.get("id")) {
+    document.getElementById("messageId").value =
+        urlParams.get("id");
+}
+
+            const password =
+                document.getElementById("password").value;
+
+            const messageElement =
+                document.getElementById("message");
+
+            const timerElement =
+                document.getElementById("timer");
+
+            if (!id || !password) {
+                messageElement.textContent =
+                    "Please enter the Message ID and password.";
+                return;
+            }
+
+            messageElement.textContent =
+                "Unlocking...";
+
+            try {
+
+                const response = await fetch(
+                    `/api/messages/${encodeURIComponent(id)}/unlock`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            password: password
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+
+                    messageElement.textContent =
+                        data.error || "Could not unlock message.";
+
+                    timerElement.textContent = "";
+
+                    return;
+                }
+
+                document.getElementById("messageTitle")
+                    .textContent = "Your Message:";
+
+                messageElement.textContent =
+                    data.message;
+
+                startTimer(data.expiresAt);
+
+            } catch (error) {
+
+                messageElement.textContent =
+                    "Could not connect to the server.";
+            }
+        }
+
+        function startTimer(expiresAt) {
+
+            clearInterval(timerInterval);
+
+            function updateTimer() {
+
+                const remaining =
+                    expiresAt - Date.now();
+
+                if (remaining <= 0) {
+
+                    clearInterval(timerInterval);
+
+                    document.getElementById("message")
+                        .textContent =
+                        "This message has expired.";
+
+                    document.getElementById("timer")
+                        .textContent = "";
+
+                    return;
+                }
+
+                const totalSeconds =
+                    Math.ceil(remaining / 1000);
+
+                const minutes =
+                    Math.floor(totalSeconds / 60);
+
+                const seconds =
+                    totalSeconds % 60;
+
+                document.getElementById("timer")
+                    .textContent =
+                    `⏱️ Time remaining: ${minutes}:${seconds
+                        .toString()
+                        .padStart(2, "0")}`;
+            }
+
+            updateTimer();
+
+            timerInterval =
+                setInterval(updateTimer, 1000);
+        }
+
+    
+
+</script>
+
+</div>
+</body>
+</html>
