@@ -189,14 +189,17 @@ if (urlParams.get("id")) {
                     return;
                 }
 
-                document.getElementById("messageTitle")
-                    .textContent = "Your Message:";
+                sessionStorage.setItem(
+    "unlockedMessage",
+    data.message
+);
 
-                messageElement.textContent =
-                    data.message;
+sessionStorage.setItem(
+    "messageExpiresAt",
+    data.expiresAt
+);
 
-                startTimer(data.expiresAt);
-
+window.location.href = "/message.html";
             } catch (error) {
 
                 messageElement.textContent =

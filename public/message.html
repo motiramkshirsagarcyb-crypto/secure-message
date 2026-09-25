@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Unlocked Protected Message</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #ffebee;
+            margin: 0;
+            padding: 40px 20px;
+            color: #1f2937;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow:
+                0 2px 4px rgba(0,0,0,0.08),
+                0 8px 15px rgba(0,0,0,0.10),
+                0 18px 35px rgba(120,60,80,0.15);
+        }
+
+        h1 {
+            color: #1f2937;
+        }
+
+        .warning {
+            padding: 15px;
+            border: 2px solid #dc2626;
+            background: #fef2f2;
+            color: #991b1b;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        #message {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 17px;
+            line-height: 1.6;
+            padding: 20px;
+            background: #fff7f9;
+            border-left: 4px solid #d97791;
+            border-radius: 6px;
+        }
+
+        #timer {
+            font-weight: bold;
+            color: #b91c1c;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false"
+      oncopy="return false"
+      onselectstart="return false">
+
+    <div class="container">
+
+        <div class="warning">
+            ⚠️ <strong>WARNING:</strong>
+            Do not screenshot, screen record, copy, or share this message.
+            This message is confidential and will automatically expire.
+        </div>
+
+        <h1>🔐 Unlocked Message</h1>
+
+        <p id="message">Loading message...</p>
+
+        <p id="timer"></p>
+
+    </div>
+
+    <script>
+        const message = sessionStorage.getItem("unlockedMessage");
+        const expiresAt = Number(
+            sessionStorage.getItem("messageExpiresAt")
+        );
+
+        const messageElement = document.getElementById("message");
+        const timerElement = document.getElementById("timer");
+
+        let timerInterval;
+
+        if (!message || !expiresAt) {
+            messageElement.textContent =
+                "No unlocked message found.";
+        } else {
+            messageElement.textContent = message;
+            startTimer(expiresAt);
+        }
+
+        function startTimer(expiresAt) {
+            clearInterval(timerInterval);
+
+            function updateTimer() {
+                const remaining = expiresAt - Date.now();
+
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+
+                    messageElement.textContent =
+                        "This message has expired.";
+
+                    timerElement.textContent = "";
+
+                    sessionStorage.removeItem("unlockedMessage");
+                    sessionStorage.removeItem("messageExpiresAt");
+
+                    return;
+                }
+
+                const totalSeconds = Math.ceil(remaining / 1000);
+
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+
+                timerElement.textContent =
+                    `⏱️ Time remaining: ${minutes}:${seconds
+                        .toString()
+                        .padStart(2, "0")}`;
+            }
+
+            updateTimer();
+
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    </script>
+
+</body>
+</html>

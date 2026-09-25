@@ -10,7 +10,7 @@ const db = new Database("messages.db");
 const scryptAsync = promisify(crypto.scrypt);
 
 const PORT = 3000;
-const MESSAGE_LIFETIME = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_MESSAGE_LIFETIME = 5 * 60 * 1000; // 5 minutes
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -28,9 +28,9 @@ db.exec(`
         salt TEXT NOT NULL,
         password_hash TEXT NOT NULL,
         created_at INTEGER NOT NULL,
-        opened_at INTEGER,
-        expires_at INTEGER
-    );
+opened_at INTEGER,
+expires_at INTEGER,
+duration_minutes INTEGER NOT NULL DEFAULT 5    );
 `);
 
 // --------------------------------------------------
@@ -39,7 +39,7 @@ db.exec(`
 
 app.post("/api/messages", async (req, res) => {
     try {
-        const { message, password } = req.body;
+        const { message, password, duration } = req.body;
 
         if (!message || !password) {
             return res.status(400).json({
@@ -52,8 +52,12 @@ app.post("/api/messages", async (req, res) => {
                 error: "Password must be at least 4 characters."
             });
         }
-
-        // Generate random message ID
+const allowedDurations = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+if (!allowedDurations.includes(Number(duration))) {
+    return res.status(400).json({
+        error: "Invalid message duration."
+    });
+}        // Generate random message ID
         const id = crypto.randomUUID();
 
         // Generate random encryption values
@@ -92,26 +96,28 @@ app.post("/api/messages", async (req, res) => {
 
         // Store encrypted message
         db.prepare(`
-            INSERT INTO messages
-            (
-                id,
-                encrypted_message,
-                iv,
-                auth_tag,
-                salt,
-                password_hash,
-                created_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        `).run(
-            id,
-            encrypted,
-            iv.toString("base64"),
-            authTag.toString("base64"),
-            salt.toString("base64"),
-            passwordHash,
-            Date.now()
-        );
+    INSERT INTO messages
+    (
+        id,
+        encrypted_message,
+        iv,
+        auth_tag,
+        salt,
+        password_hash,
+        created_at,
+       duration_minutes
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+`).run(
+    id,
+    encrypted,
+    iv.toString("base64"),
+    authTag.toString("base64"),
+    salt.toString("base64"),
+    passwordHash,
+    Date.now(),
+    Number(duration)
+);     
 
         res.json({
             id: id,
@@ -193,9 +199,8 @@ app.post("/api/messages/:id/unlock", async (req, res) => {
 
             const openedAt = Date.now();
 
-            expiresAt = openedAt + MESSAGE_LIFETIME;
-
-            db.prepare(`
+         expiresAt = openedAt + (message.duration_minutes * 60 * 1000);      
+   db.prepare(`
                 UPDATE messages
                 SET opened_at = ?, expires_at = ?
                 WHERE id = ?

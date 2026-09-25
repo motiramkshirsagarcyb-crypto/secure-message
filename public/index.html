@@ -3,22 +3,28 @@
 <head>
 <style>
 body {
+    background-color: #ffebee;
     font-family: Arial, sans-serif;
-    background: #f4f7fb;
     margin: 0;
     padding: 40px 20px;
     color: #1f2937;
-}
-
-.container {
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}.container {
     max-width: 600px;
     margin: auto;
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-textarea {
-    width: 100%;
+    box-shadow:
+    0 2px 4px rgba(0,0,0,0.08),
+    0 8px 15px rgba(0,0,0,0.10),
+    0 18px 35px rgba(120,60,80,0.15);}
+
+textarea {    width: 100%;
     box-sizing: border-box;
     padding: 12px;
     border: 1px solid #d1d5db;
@@ -35,11 +41,46 @@ input {
     border-radius: 6px;
     font-size: 15px;
 }
+/* Professional messaging background */
+
+body::before {
+    content: "✉    ✦    🔒    ❀    💬    ✧    ✉    🔐    ✦    💌";
+    position: fixed;
+    top: -5px;
+    left: 0;
+    width: 100%;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 8px;
+    color: #c4778b;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::after {
+    content: "✧    💬    ✉    ❀    🔒    ✦    💌    ✧    🔐    ✉";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 25px 0;
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 8px;
+    color: #c4778b;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
 }
 </style>
-
-
-    <meta charset="UTF-8">
+       <meta charset="UTF-8">
     <title>Password Protected Messaging</title>
 </head>
 
@@ -59,13 +100,30 @@ input {
         type="password"
         id="password"
         placeholder="Enter password">
+<label for="duration">Message expires after:</label>
 
+<label for="duration">Message duration:</label>
+
+<select id="duration">
+    <option value="1">1 minute</option>
+    <option value="2">2 minutes</option>
+    <option value="3">3 minutes</option>
+    <option value="4">4 minutes</option>
+    <option value="5">5 minutes</option>
+    <option value="6">6 minutes</option>
+    <option value="7">7 minutes</option>
+    <option value="8">8 minutes</option>
+    <option value="9">9 minutes</option>
+    <option value="10" selected>10 minutes</option>
+</select>
     <br><br>
 
-    <button onclick="createMessage()">
-        Create Protected Message
-    </button>
-
+   <button
+    onclick="createMessage()"
+    onmouseover="this.style.backgroundColor='green'"
+    onmouseout="this.style.backgroundColor=''">
+    Create Protected Message
+</button>
     <p id="result"></p>
 
     <script>
@@ -89,10 +147,10 @@ input {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        message: message,
-                        password: password
-                    })
-                });
+    message: message,
+    password: password,
+    duration: Number(document.getElementById("duration").value)
+})                });
 
                 const data = await response.json();
 
@@ -104,8 +162,9 @@ input {
                 const link =
     window.location.origin +
     "/receive.html?id=" +
-    encodeURIComponent(data.id);
-
+    encodeURIComponent(data.id) +
+    "&duration=" +
+    encodeURIComponent(document.getElementById("duration").value);
 result.innerHTML =
     "Message created!<br><br>" +
     "<a href='" + link + "'>" +
