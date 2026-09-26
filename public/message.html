@@ -2,142 +2,452 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Unlocked Protected Message</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Secure Message - Unlocked</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #ffebee;
-            margin: 0;
-            padding: 40px 20px;
-            color: #1f2937;
-            min-height: 100vh;
+        * {
             box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, #ffd6e2 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #f8c8d8 0%, transparent 35%),
+                #fff0f5;
+            color: #3d2630;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 30px 18px;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Floating security symbols */
+
+        .symbol {
+            position: fixed;
+            color: rgba(190, 70, 110, 0.18);
+            font-size: 28px;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 7s ease-in-out infinite;
+        }
+
+        .s1 { top: 8%; left: 8%; animation-delay: 0s; }
+        .s2 { top: 18%; right: 10%; animation-delay: 1s; }
+        .s3 { top: 45%; left: 4%; animation-delay: 2s; }
+        .s4 { top: 65%; right: 7%; animation-delay: 3s; }
+        .s5 { bottom: 8%; left: 15%; animation-delay: 4s; }
+        .s6 { bottom: 15%; right: 20%; animation-delay: 5s; }
+        .s7 { top: 30%; left: 18%; animation-delay: 1.5s; }
+        .s8 { top: 78%; right: 35%; animation-delay: 2.5s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-14px) rotate(6deg);
+            }
         }
 
         .container {
-            max-width: 600px;
+            position: relative;
+            z-index: 1;
             width: 100%;
-            box-sizing: border-box;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
+            max-width: 680px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 32px;
+            border-radius: 22px;
             box-shadow:
-                0 2px 4px rgba(0,0,0,0.08),
-                0 8px 15px rgba(0,0,0,0.10),
-                0 18px 35px rgba(120,60,80,0.15);
+                0 10px 30px rgba(150, 60, 90, 0.12),
+                0 25px 60px rgba(150, 60, 90, 0.10);
+            border: 1px solid rgba(220, 120, 150, 0.18);
+        }
+
+        .security-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .lock-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec6f9c, #c94f7d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 27px;
+            box-shadow: 0 8px 20px rgba(201, 79, 125, 0.25);
         }
 
         h1 {
-            color: #1f2937;
+            margin: 0;
+            color: #542738;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            color: #8a6170;
+            font-size: 14px;
         }
 
         .warning {
-            padding: 15px;
-            border: 2px solid #dc2626;
-            background: #fef2f2;
-            color: #991b1b;
-            border-radius: 8px;
-            margin-bottom: 25px;
+            padding: 16px 18px;
+            border-radius: 13px;
+            margin-bottom: 24px;
+            background: #fff4f7;
+            border: 1px solid #f0b6c7;
+            color: #8f3150;
             line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .warning strong {
+            color: #a52d52;
+        }
+
+        .message-label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #5d3545;
         }
 
         #message {
             white-space: pre-wrap;
             word-wrap: break-word;
             font-size: 17px;
-            line-height: 1.6;
-            padding: 20px;
-            background: #fff7f9;
-            border-left: 4px solid #d97791;
-            border-radius: 6px;
+            line-height: 1.7;
+            padding: 22px;
+            min-height: 130px;
+            background: #fff8fa;
+            border: 1px solid #f1ccd7;
+            border-left: 5px solid #d8668e;
+            border-radius: 14px;
+            color: #38252d;
+            box-shadow: inset 0 1px 3px rgba(120, 50, 80, 0.04);
+        }
+
+        .timer-box {
+            margin-top: 20px;
+            padding: 14px;
+            text-align: center;
+            border-radius: 12px;
+            background: #fff0f4;
+            border: 1px solid #f2c2d0;
         }
 
         #timer {
+            margin: 0;
             font-weight: bold;
-            color: #b91c1c;
-            margin-top: 20px;
+            color: #b3365e;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 12px;
+            color: #9b7583;
+        }
+
+        /* Confidential watermark */
+
+        .watermark {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: rgba(170, 70, 105, 0.35);
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            .container {
+                padding: 23px 18px;
+                border-radius: 18px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            #message {
+                font-size: 16px;
+                padding: 18px;
+            }
+
+            .symbol {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
 
-<body oncontextmenu="return false"
-      oncopy="return false"
-      onselectstart="return false">
+<body
+    oncontextmenu="return false"
+    oncopy="return false"
+    oncut="return false"
+    onpaste="return false"
+    onselectstart="return false"
+    ondragstart="return false"
+>
+
+    <!-- Floating security symbols -->
+
+    <div class="symbol s1">✉</div>
+    <div class="symbol s2">🔒</div>
+    <div class="symbol s3">✦</div>
+    <div class="symbol s4">🔐</div>
+    <div class="symbol s5">✧</div>
+    <div class="symbol s6">🛡</div>
+    <div class="symbol s7">🔑</div>
+    <div class="symbol s8">💬</div>
+
 
     <div class="container">
 
-        <div class="warning">
-            ⚠️ <strong>WARNING:</strong>
-            Do not screenshot, screen record, copy, or share this message.
-            This message is confidential and will automatically expire.
+        <div class="security-header">
+
+            <div class="lock-icon">
+                🔐
+            </div>
+
+            <h1>Secure Message</h1>
+
+            <div class="subtitle">
+                Your protected message has been unlocked
+            </div>
+
         </div>
 
-        <h1>🔐 Unlocked Message</h1>
 
-        <p id="message">Loading message...</p>
+        <div class="warning">
 
-        <p id="timer"></p>
+            ⚠️ <strong>Confidential Message</strong><br>
+
+            This message is private. Do not screenshot, screen record,
+            copy, or share it. The message will automatically disappear
+            when the timer expires.
+
+        </div>
+
+
+        <span class="message-label">
+            🔓 Protected Message
+        </span>
+
+        <div id="message">
+            Loading message...
+        </div>
+
+
+        <div class="timer-box">
+
+            <p id="timer">
+                Checking expiration...
+            </p>
+
+        </div>
+
+
+        <div class="watermark">
+            CONFIDENTIAL • SECURE • SELF-DESTRUCTING
+        </div>
+
+
+        <div class="footer">
+            🔒 Protected session • Automatic expiration enabled
+        </div>
 
     </div>
 
-    <script>
-        const message = sessionStorage.getItem("unlockedMessage");
-        const expiresAt = Number(
-            sessionStorage.getItem("messageExpiresAt")
-        );
 
-        const messageElement = document.getElementById("message");
-        const timerElement = document.getElementById("timer");
+    <script>
+
+        const message =
+            sessionStorage.getItem("unlockedMessage");
+
+        const expiresAt =
+            Number(
+                sessionStorage.getItem("messageExpiresAt")
+            );
+
+        const messageElement =
+            document.getElementById("message");
+
+        const timerElement =
+            document.getElementById("timer");
 
         let timerInterval;
 
+
         if (!message || !expiresAt) {
+
             messageElement.textContent =
                 "No unlocked message found.";
+
+            timerElement.textContent = "";
+
         } else {
-            messageElement.textContent = message;
+
+            messageElement.textContent =
+                message;
+
             startTimer(expiresAt);
+
         }
 
+
         function startTimer(expiresAt) {
+
             clearInterval(timerInterval);
 
+
             function updateTimer() {
-                const remaining = expiresAt - Date.now();
+
+                const remaining =
+                    expiresAt - Date.now();
+
 
                 if (remaining <= 0) {
+
                     clearInterval(timerInterval);
 
+
                     messageElement.textContent =
-                        "This message has expired.";
+                        "This message has expired and has been destroyed.";
 
-                    timerElement.textContent = "";
 
-                    sessionStorage.removeItem("unlockedMessage");
-                    sessionStorage.removeItem("messageExpiresAt");
+                    timerElement.textContent =
+                        "🔒 Message destroyed";
+
+
+                    sessionStorage.removeItem(
+                        "unlockedMessage"
+                    );
+
+                    sessionStorage.removeItem(
+                        "messageExpiresAt"
+                    );
+
 
                     return;
+
                 }
 
-                const totalSeconds = Math.ceil(remaining / 1000);
 
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
+                const totalSeconds =
+                    Math.ceil(
+                        remaining / 1000
+                    );
+
+
+                const minutes =
+                    Math.floor(
+                        totalSeconds / 60
+                    );
+
+
+                const seconds =
+                    totalSeconds % 60;
+
 
                 timerElement.textContent =
                     `⏱️ Time remaining: ${minutes}:${seconds
                         .toString()
                         .padStart(2, "0")}`;
+
             }
+
 
             updateTimer();
 
-            timerInterval = setInterval(updateTimer, 1000);
+
+            timerInterval =
+                setInterval(
+                    updateTimer,
+                    1000
+                );
+
         }
+
+
+        /*
+         * Hide the message when the browser tab
+         * becomes hidden.
+         *
+         * This does NOT provide guaranteed
+         * screenshot/recording protection.
+         */
+
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+
+                if (
+                    document.visibilityState === "hidden"
+                ) {
+
+                    messageElement.style.visibility =
+                        "hidden";
+
+                } else {
+
+                    if (
+                        sessionStorage.getItem(
+                            "unlockedMessage"
+                        )
+                    ) {
+
+                        messageElement.style.visibility =
+                            "visible";
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Clear the message if the page is
+         * closed or navigated away from.
+         */
+
+        window.addEventListener(
+            "pagehide",
+            function () {
+
+                sessionStorage.removeItem(
+                    "unlockedMessage"
+                );
+
+                sessionStorage.removeItem(
+                    "messageExpiresAt"
+                );
+
+            }
+        );
+
     </script>
 
 </body>
