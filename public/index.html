@@ -1,183 +1,692 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-    background-color: #ffebee;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 40px 20px;
-    color: #1f2937;
-    min-height: 100vh;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}.container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow:
-    0 2px 4px rgba(0,0,0,0.08),
-    0 8px 15px rgba(0,0,0,0.10),
-    0 18px 35px rgba(120,60,80,0.15);}
+    <meta charset="UTF-8">
 
-textarea {    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 15px;
-    resize: vertical;
-}
-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    margin-top: 8px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 15px;
-}
-/* Professional messaging background */
+    <meta name="description"
+        content="Send password protected messages with automatic expiration and a countdown timer. Create secure, self-destructing messages online.">
 
-body::before {
-    content: "✉    ✦    🔒    ❀    💬    ✧    ✉    🔐    ✦    💌";
-    position: fixed;
-    top: -5px;
-    left: 0;
-    width: 100%;
-    padding: 8px 0;
-    text-align: center;
-    font-size: 22px;
-    letter-spacing: 8px;
-    color: #c4778b;
-    opacity: 0.35;
-    pointer-events: none;
-    z-index: 0;
-}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-body::after {
-    content: "✧    💬    ✉    ❀    🔒    ✦    💌    ✧    🔐    ✉";
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 25px 0;
-    text-align: center;
-    font-size: 22px;
-    letter-spacing: 8px;
-    color: #c4778b;
-    opacity: 0.35;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.container {
-    position: relative;
-    z-index: 1;
-}
-</style>
-       <meta charset="UTF-8">
-<meta name="description" content="Send password protected messages with automatic expiration and a countdown timer. Create secure, self-destructing messages online.">
     <title>Secure Message - Password Protected Self-Destructing Messages</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #243047;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255,255,255,0.9), transparent 25%),
+                radial-gradient(circle at 85% 75%, rgba(255,255,255,0.8), transparent 25%),
+                #fff0f4;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        /* --------------------------------
+           FLOATING BACKGROUND SYMBOLS
+        -------------------------------- */
+
+        .floating-symbol {
+            position: fixed;
+            color: #e987a8;
+            opacity: 0.38;
+            pointer-events: none;
+            user-select: none;
+            z-index: 0;
+            font-size: 25px;
+            animation: floatSymbol 5s ease-in-out infinite;
+        }
+
+        @keyframes floatSymbol {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-8px) rotate(3deg);
+            }
+        }
+
+        .s1  { top: 9%;  left: 5%;  }
+        .s2  { top: 18%; left: 19%; font-size: 20px; animation-delay: .7s; }
+        .s3  { top: 31%; left: 8%;  }
+        .s4  { top: 39%; left: 20%; font-size: 20px; animation-delay: 1s; }
+        .s5  { top: 55%; left: 6%;  font-size: 23px; animation-delay: 1.5s; }
+        .s6  { top: 69%; left: 15%; font-size: 20px; animation-delay: .3s; }
+        .s7  { top: 82%; left: 4%;  }
+        .s8  { top: 91%; left: 24%; font-size: 19px; animation-delay: 1.2s; }
+
+        .s9  { top: 12%; right: 8%;  }
+        .s10 { top: 23%; right: 20%; font-size: 20px; animation-delay: .5s; }
+        .s11 { top: 34%; right: 7%;  }
+        .s12 { top: 47%; right: 18%; font-size: 22px; animation-delay: 1.3s; }
+        .s13 { top: 61%; right: 6%;  }
+        .s14 { top: 73%; right: 20%; font-size: 20px; animation-delay: .8s; }
+        .s15 { top: 84%; right: 8%;  }
+        .s16 { top: 92%; right: 25%; font-size: 19px; animation-delay: 1.6s; }
+
+        /* --------------------------------
+           MAIN CARD
+        -------------------------------- */
+
+        .container {
+            position: relative;
+            z-index: 2;
+
+            width: 100%;
+            max-width: 720px;
+
+            background: rgba(255, 255, 255, 0.97);
+
+            border-radius: 18px;
+
+            padding: 34px 36px 36px;
+
+            box-shadow:
+                0 5px 12px rgba(80, 40, 60, 0.08),
+                0 18px 45px rgba(120, 60, 80, 0.16);
+
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        /* --------------------------------
+           HEADER
+        -------------------------------- */
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            padding-bottom: 22px;
+            margin-bottom: 24px;
+
+            border-bottom: 1px solid #f0dfe5;
+        }
+
+        .security-icon {
+            width: 62px;
+            height: 62px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background: #fff0f4;
+
+            font-size: 32px;
+
+            box-shadow:
+                inset 0 0 0 1px #f8d9e3;
+        }
+
+        h1 {
+            margin: 0 0 7px;
+
+            font-size: 32px;
+            line-height: 1.15;
+
+            color: #17233b;
+        }
+
+        .subtitle {
+            margin: 0;
+
+            color: #68758b;
+
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* --------------------------------
+           FORM
+        -------------------------------- */
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            color: #43516a;
+        }
+
+        textarea,
+        input,
+        select {
+            width: 100%;
+
+            border: 1px solid #d9e0ea;
+
+            background: #ffffff;
+
+            border-radius: 11px;
+
+            color: #27354c;
+
+            font-family: inherit;
+            font-size: 16px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        textarea {
+            min-height: 145px;
+
+            padding: 16px;
+
+            resize: vertical;
+
+            line-height: 1.5;
+        }
+
+        input {
+            height: 54px;
+            padding: 0 16px;
+        }
+
+        select {
+            height: 54px;
+            padding: 0 16px;
+
+            cursor: pointer;
+        }
+
+        textarea::placeholder,
+        input::placeholder {
+            color: #9aa6b8;
+        }
+
+        textarea:focus,
+        input:focus,
+        select:focus {
+            border-color: #e45d86;
+
+            box-shadow:
+                0 0 0 4px rgba(228, 93, 134, 0.10);
+        }
+
+        /* --------------------------------
+           DURATION
+        -------------------------------- */
+
+        .duration-wrapper {
+            position: relative;
+        }
+
+        .duration-icon {
+            position: absolute;
+
+            left: 16px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            font-size: 19px;
+
+            pointer-events: none;
+        }
+
+        #duration {
+            padding-left: 48px;
+        }
+
+        /* --------------------------------
+           BUTTON
+        -------------------------------- */
+
+        button {
+            width: 100%;
+
+            height: 54px;
+
+            border: none;
+            border-radius: 11px;
+
+            background: linear-gradient(
+                135deg,
+                #e85d87,
+                #d94e79
+            );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 16px rgba(217, 78, 121, 0.24);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                filter 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 22px rgba(217, 78, 121, 0.30);
+
+            filter: brightness(1.03);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: wait;
+            transform: none;
+        }
+
+        .button-icon {
+            margin-right: 9px;
+            font-size: 17px;
+        }
+
+        /* --------------------------------
+           RESULT
+        -------------------------------- */
+
+        #result {
+            margin: 18px 0 0;
+
+            padding: 0;
+
+            color: #56647a;
+
+            font-size: 14px;
+            line-height: 1.6;
+
+            overflow-wrap: anywhere;
+        }
+
+        #result.success {
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #fff3f6;
+
+            border: 1px solid #f5d5df;
+
+            color: #71364b;
+        }
+
+        #result.error {
+            color: #c0395d;
+            font-weight: 600;
+        }
+
+        #result a {
+            color: #d94e79;
+            font-weight: 700;
+        }
+
+        /* --------------------------------
+           MOBILE
+        -------------------------------- */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 20px 14px;
+            }
+
+            .container {
+                padding: 25px 20px 26px;
+                border-radius: 15px;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+            .security-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 27px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            textarea {
+                min-height: 130px;
+            }
+
+            .floating-symbol {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
 
-    <h1>Password Protected Messaging</h1>
+    <!-- RANDOM BACKGROUND SYMBOLS -->
 
-    <h2>Send a Protected Message</h2>
-<textarea
-    id="message"
-    rows="8"
-    placeholder="Enter your message"></textarea>
-    <br><br>
+    <span class="floating-symbol s1">✉</span>
+    <span class="floating-symbol s2">✦</span>
+    <span class="floating-symbol s3">🔒</span>
+    <span class="floating-symbol s4">💬</span>
+    <span class="floating-symbol s5">✧</span>
+    <span class="floating-symbol s6">🔐</span>
+    <span class="floating-symbol s7">✉</span>
+    <span class="floating-symbol s8">✦</span>
 
-    <input
-        type="password"
-        id="password"
-        placeholder="Enter password">
-<label for="duration">Message expires after:</label>
+    <span class="floating-symbol s9">🔒</span>
+    <span class="floating-symbol s10">✈</span>
+    <span class="floating-symbol s11">🛡</span>
+    <span class="floating-symbol s12">🔑</span>
+    <span class="floating-symbol s13">💬</span>
+    <span class="floating-symbol s14">✧</span>
+    <span class="floating-symbol s15">✉</span>
+    <span class="floating-symbol s16">🔐</span>
 
-<label for="duration">Message duration:</label>
 
-<select id="duration">
-    <option value="1">1 minute</option>
-    <option value="2">2 minutes</option>
-    <option value="3">3 minutes</option>
-    <option value="4">4 minutes</option>
-    <option value="5">5 minutes</option>
-    <option value="6">6 minutes</option>
-    <option value="7">7 minutes</option>
-    <option value="8">8 minutes</option>
-    <option value="9">9 minutes</option>
-    <option value="10" selected>10 minutes</option>
-</select>
-    <br><br>
+    <!-- MAIN CARD -->
 
-   <button
-    onclick="createMessage()"
-    onmouseover="this.style.backgroundColor='green'"
-    onmouseout="this.style.backgroundColor=''">
-    Create Protected Message
-</button>
-    <p id="result"></p>
+    <div class="container">
+
+        <div class="header">
+
+            <div class="security-icon">
+                🔐
+            </div>
+
+            <div>
+                <h1>Password Protected Messaging</h1>
+
+                <p class="subtitle">
+                    Send a message that can only be read with the correct password.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div class="form-group">
+
+            <label for="message">
+                Your Message
+            </label>
+
+            <textarea
+                id="message"
+                placeholder="Enter your message..."
+            ></textarea>
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="form-group">
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+            >
+
+        </div>
+
+
+        <!-- DURATION -->
+
+        <div class="form-group">
+
+            <label for="duration">
+                Message expires after
+            </label>
+
+            <div class="duration-wrapper">
+
+                <span class="duration-icon">◷</span>
+
+                <select id="duration">
+
+                    <option value="1">
+                        1 minute
+                    </option>
+
+                    <option value="2">
+                        2 minutes
+                    </option>
+
+                    <option value="3">
+                        3 minutes
+                    </option>
+
+                    <option value="4">
+                        4 minutes
+                    </option>
+
+                    <option value="5">
+                        5 minutes
+                    </option>
+
+                    <option value="6">
+                        6 minutes
+                    </option>
+
+                    <option value="7">
+                        7 minutes
+                    </option>
+
+                    <option value="8">
+                        8 minutes
+                    </option>
+
+                    <option value="9">
+                        9 minutes
+                    </option>
+
+                    <option value="10" selected>
+                        10 minutes
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTON -->
+
+        <button
+            id="createButton"
+            onclick="createMessage()"
+        >
+            <span class="button-icon">✈</span>
+            Create Protected Message
+        </button>
+
+
+        <!-- RESULT -->
+
+        <p id="result"></p>
+
+    </div>
+
+
+    <!-- EXISTING MESSAGE CREATION FUNCTION -->
 
     <script>
+
         async function createMessage() {
 
-            const message = document.getElementById("message").value;
-            const password = document.getElementById("password").value;
-            const result = document.getElementById("result");
+            const message =
+                document.getElementById("message").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const duration =
+                Number(document.getElementById("duration").value);
+
+            const result =
+                document.getElementById("result");
+
+            const button =
+                document.getElementById("createButton");
+
+
+            /* Validation */
 
             if (!message || !password) {
-                result.textContent = "Please enter a message and password.";
+
+                result.className = "error";
+
+                result.textContent =
+                    "Please enter a message and password.";
+
                 return;
             }
 
-            result.textContent = "Creating protected message...";
+
+            /* Loading */
+
+            result.className = "";
+
+            result.textContent =
+                "Creating protected message...";
+
+            button.disabled = true;
+
 
             try {
-                const response = await fetch("/api/messages", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-    message: message,
-    password: password,
-    duration: Number(document.getElementById("duration").value)
-})                });
 
-                const data = await response.json();
+                const response = await fetch(
+                    "/api/messages",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            message: message,
+
+                            password: password,
+
+                            duration: duration
+
+                        })
+                    }
+                );
+
+
+                const data =
+                    await response.json();
+
 
                 if (!response.ok) {
-                    result.textContent = data.error || "Something went wrong.";
+
+                    result.className = "error";
+
+                    result.textContent =
+                        data.error ||
+                        "Something went wrong.";
+
+                    button.disabled = false;
+
                     return;
                 }
 
+
+                /* Create receiver link */
+
                 const link =
-    window.location.origin +
-    "/receive.html?id=" +
-    encodeURIComponent(data.id) +
-    "&duration=" +
-    encodeURIComponent(document.getElementById("duration").value);
-result.innerHTML =
-    "Message created!<br><br>" +
-    "<a href='" + link + "'>" +
-    link +
-    "</a>";
+                    window.location.origin +
+                    "/receive.html?id=" +
+                    encodeURIComponent(data.id) +
+                    "&duration=" +
+                    encodeURIComponent(duration);
+
+
+                result.className = "success";
+
+
+                result.innerHTML =
+                    "<strong>✓ Protected message created!</strong>" +
+                    "<br><br>" +
+                    "Share this link with the recipient:" +
+                    "<br>" +
+                    "<a href=\"" +
+                    link +
+                    "\">" +
+                    link +
+                    "</a>";
+
+
+                /* Clear sensitive form fields */
+
+                document.getElementById("message").value = "";
+                document.getElementById("password").value = "";
+
 
             } catch (error) {
+
+                result.className = "error";
+
                 result.textContent =
                     "Could not connect to the server.";
+
+            } finally {
+
+                button.disabled = false;
+
             }
+
         }
+
     </script>
-</div>
+
 </body>
 </html>
