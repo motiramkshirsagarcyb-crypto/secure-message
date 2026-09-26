@@ -1,146 +1,589 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f7fb;
-    margin: 0;
-    padding: 40px 20px;
-    color: #1f2937;
-    user-select: none;
-    -webkit-user-select: none;
-}
+    <meta charset="UTF-8">
 
-.container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.warning {
-    padding: 15px 18px;
-    border: 1px solid #dc2626;
-    background: #fef2f2;
-    color: #991b1b;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    font-size: 15px;
-    line-height: 1.5;
-}
-    padding: 15px;
-    border: 1px solid #dc2626;
-    background: #fef2f2;
-    color: #991b1b;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-
-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    margin-top: 8px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 15px;
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 6px;
-    background: #2563eb;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #1d4ed8;
-}
-
-#message {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-size: 17px;
-    line-height: 1.6;
-}
-
-#timer {
-    font-weight: bold;
-    margin-top: 15px;
-}
-</style>    <meta charset="UTF-8">
     <title>Receive Protected Message</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            color: #243047;
+
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(255,255,255,0.9),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 85% 75%,
+                    rgba(255,255,255,0.8),
+                    transparent 25%
+                ),
+                #fff0f4;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 40px 20px;
+
+            overflow-x: hidden;
+
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+
+        /* ========================================
+           RANDOM FLOATING SECURITY SYMBOLS
+        ======================================== */
+
+        .floating-symbol {
+            position: fixed;
+
+            color: #e987a8;
+
+            opacity: 0.38;
+
+            pointer-events: none;
+
+            user-select: none;
+
+            z-index: 0;
+
+            font-size: 25px;
+
+            animation: floating 5s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-9px) rotate(4deg);
+            }
+        }
+
+
+        .s1  { top: 8%;  left: 5%; }
+        .s2  { top: 18%; left: 19%; font-size: 20px; animation-delay: .7s; }
+        .s3  { top: 31%; left: 8%; }
+        .s4  { top: 43%; left: 20%; font-size: 20px; animation-delay: 1s; }
+        .s5  { top: 57%; left: 6%; font-size: 23px; animation-delay: 1.5s; }
+        .s6  { top: 71%; left: 16%; font-size: 20px; animation-delay: .3s; }
+        .s7  { top: 84%; left: 5%; }
+        .s8  { top: 91%; left: 25%; font-size: 19px; animation-delay: 1.2s; }
+
+        .s9  { top: 10%; right: 8%; }
+        .s10 { top: 22%; right: 20%; font-size: 20px; animation-delay: .5s; }
+        .s11 { top: 34%; right: 7%; }
+        .s12 { top: 48%; right: 18%; font-size: 22px; animation-delay: 1.3s; }
+        .s13 { top: 62%; right: 6%; }
+        .s14 { top: 74%; right: 20%; font-size: 20px; animation-delay: .8s; }
+        .s15 { top: 85%; right: 8%; }
+        .s16 { top: 92%; right: 25%; font-size: 19px; animation-delay: 1.6s; }
+
+
+        /* ========================================
+           MAIN CARD
+        ======================================== */
+
+        .container {
+            position: relative;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 720px;
+
+            background: rgba(255,255,255,0.97);
+
+            border-radius: 18px;
+
+            padding: 34px 36px 36px;
+
+            box-shadow:
+                0 5px 12px rgba(80,40,60,0.08),
+                0 18px 45px rgba(120,60,80,0.16);
+
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+
+        /* ========================================
+           WARNING
+        ======================================== */
+
+        .warning {
+            display: flex;
+
+            gap: 12px;
+
+            align-items: flex-start;
+
+            padding: 15px 17px;
+
+            margin-bottom: 25px;
+
+            border-radius: 11px;
+
+            background: #fff7f8;
+
+            border: 1px solid #f1cbd6;
+
+            color: #71364b;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+        .warning-icon {
+            font-size: 21px;
+
+            flex-shrink: 0;
+        }
+
+        .warning strong {
+            color: #a43d5d;
+        }
+
+
+        /* ========================================
+           HEADER
+        ======================================== */
+
+        .header {
+            display: flex;
+
+            align-items: center;
+
+            gap: 16px;
+
+            padding-bottom: 22px;
+
+            margin-bottom: 25px;
+
+            border-bottom: 1px solid #f0dfe5;
+        }
+
+        .security-icon {
+            width: 62px;
+            height: 62px;
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background: #fff0f4;
+
+            font-size: 31px;
+
+            box-shadow:
+                inset 0 0 0 1px #f8d9e3;
+        }
+
+        h1 {
+            margin: 0 0 7px;
+
+            font-size: 32px;
+
+            line-height: 1.15;
+
+            color: #17233b;
+        }
+
+        .subtitle {
+            margin: 0;
+
+            color: #68758b;
+
+            font-size: 16px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ========================================
+           PASSWORD
+        ======================================== */
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            color: #43516a;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-icon {
+            position: absolute;
+
+            left: 16px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            font-size: 19px;
+
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+
+            height: 54px;
+
+            padding: 0 16px 0 48px;
+
+            border: 1px solid #d9e0ea;
+
+            border-radius: 11px;
+
+            background: white;
+
+            color: #27354c;
+
+            font-family: inherit;
+
+            font-size: 16px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #9aa6b8;
+        }
+
+        input:focus {
+            border-color: #e45d86;
+
+            box-shadow:
+                0 0 0 4px rgba(228,93,134,0.10);
+        }
+
+
+        /* ========================================
+           UNLOCK BUTTON
+        ======================================== */
+
+        button {
+            width: 100%;
+
+            height: 54px;
+
+            border: none;
+
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e85d87,
+                    #d94e79
+                );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 16px rgba(217,78,121,0.24);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                filter 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 22px rgba(217,78,121,0.30);
+
+            filter: brightness(1.03);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.65;
+
+            cursor: wait;
+
+            transform: none;
+        }
+
+        .button-icon {
+            margin-right: 9px;
+
+            font-size: 18px;
+        }
+
+
+        /* ========================================
+           RESULT
+        ======================================== */
+
+        #message {
+            margin: 18px 0 0;
+
+            color: #56647a;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            overflow-wrap: anywhere;
+        }
+
+        #message.error {
+            color: #c0395d;
+
+            font-weight: 600;
+        }
+
+        #timer {
+            margin-top: 12px;
+
+            color: #d94e79;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        /* ========================================
+           MOBILE
+        ======================================== */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 20px 14px;
+            }
+
+            .container {
+                padding: 25px 20px 26px;
+
+                border-radius: 15px;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+            .security-icon {
+                width: 52px;
+                height: 52px;
+
+                font-size: 27px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .floating-symbol {
+                font-size: 20px;
+            }
+        }
+    </style>
 </head>
 
-<body oncontextmenu="return false" oncopy="return false" onselectstart="return false">
-<div class="container">
-<div style="padding: 15px; border: 2px solid red; margin-bottom: 20px;">
-    ⚠️ <strong>WARNING:</strong> Do not screenshot, screen record, copy, or share this message.
-    This message is confidential and will automatically expire.
-</div>
 
-    <h1>🔐 Receive Protected Message</h1>
+<body
+    oncontextmenu="return false"
+    oncopy="return false"
+    onselectstart="return false"
+>
 
-    <p>Enter the Message ID you received.</p>
 
-    <input
-        type="text"
-        id="messageId"
-        placeholder="Message ID"
-        size="50">
+    <!-- RANDOM BACKGROUND SYMBOLS -->
 
-    <br><br>
+    <span class="floating-symbol s1">✉</span>
+    <span class="floating-symbol s2">✦</span>
+    <span class="floating-symbol s3">🔒</span>
+    <span class="floating-symbol s4">💬</span>
+    <span class="floating-symbol s5">✧</span>
+    <span class="floating-symbol s6">🔐</span>
+    <span class="floating-symbol s7">✉</span>
+    <span class="floating-symbol s8">✦</span>
 
-    <input
-        type="password"
-        id="password"
-        placeholder="Password">
+    <span class="floating-symbol s9">🛡</span>
+    <span class="floating-symbol s10">✈</span>
+    <span class="floating-symbol s11">🔒</span>
+    <span class="floating-symbol s12">🔑</span>
+    <span class="floating-symbol s13">💬</span>
+    <span class="floating-symbol s14">✧</span>
+    <span class="floating-symbol s15">✉</span>
+    <span class="floating-symbol s16">🔐</span>
 
-    <br><br>
 
-    <button onclick="unlockMessage()">
-        Unlock Message
-    </button>
+    <!-- MAIN CARD -->
 
-    <h2 id="messageTitle"></h2>
+    <div class="container">
 
-    <p id="message"></p>
 
-    <p id="timer"></p>
+        <!-- WARNING -->
+
+        <div class="warning">
+
+            <div class="warning-icon">
+                ⚠️
+            </div>
+
+            <div>
+                <strong>Confidential message</strong><br>
+
+                This message is protected and will automatically
+                expire after its allowed time.
+            </div>
+
+        </div>
+
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <div class="security-icon">
+                🔐
+            </div>
+
+            <div>
+
+                <h1>
+                    Receive Protected Message
+                </h1>
+
+                <p class="subtitle">
+                    Enter the password provided by the sender
+                    to unlock this message.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- PASSWORD ONLY -->
+
+        <div class="form-group">
+
+            <label for="password">
+                Message Password
+            </label>
+
+            <div class="password-wrapper">
+
+                <span class="password-icon">
+                    🔑
+                </span>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="off"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- UNLOCK -->
+
+        <button
+            id="unlockButton"
+            onclick="unlockMessage()"
+        >
+            <span class="button-icon">🔓</span>
+            Unlock Protected Message
+        </button>
+
+
+        <!-- RESULT -->
+
+        <p id="message"></p>
+
+        <p id="timer"></p>
+
+
+    </div>
+
 
     <script>
 
         let timerInterval;
-const urlParams = new URLSearchParams(window.location.search);
 
-window.addEventListener("DOMContentLoaded", () => {
-    const id = urlParams.get("id");
 
-    if (id) {
-        document.getElementById("messageId").value = id;
-    }
-});
+        /*
+         * The Message ID is now taken ONLY from the
+         * private URL parameter.
+         *
+         * It is never displayed on the page.
+         */
+
+        const urlParams =
+            new URLSearchParams(window.location.search);
+
+        const messageId =
+            urlParams.get("id");
+
 
         async function unlockMessage() {
-
-            const urlParams = new URLSearchParams(window.location.search);
-
-const id =
-    urlParams.get("id") ||
-    document.getElementById("messageId").value.trim();
-
-if (urlParams.get("id")) {
-    document.getElementById("messageId").value =
-        urlParams.get("id");
-}
 
             const password =
                 document.getElementById("password").value;
@@ -151,19 +594,52 @@ if (urlParams.get("id")) {
             const timerElement =
                 document.getElementById("timer");
 
-            if (!id || !password) {
+            const button =
+                document.getElementById("unlockButton");
+
+
+            /* Check that this is a valid message link */
+
+            if (!messageId) {
+
+                messageElement.className = "error";
+
                 messageElement.textContent =
-                    "Please enter the Message ID and password.";
+                    "This message link is invalid or incomplete.";
+
                 return;
             }
 
+
+            /* Check password */
+
+            if (!password) {
+
+                messageElement.className = "error";
+
+                messageElement.textContent =
+                    "Please enter the message password.";
+
+                return;
+            }
+
+
+            /* Loading state */
+
+            messageElement.className = "";
+
             messageElement.textContent =
-                "Unlocking...";
+                "Unlocking protected message...";
+
+            timerElement.textContent = "";
+
+            button.disabled = true;
+
 
             try {
 
                 const response = await fetch(
-                    `/api/messages/${encodeURIComponent(id)}/unlock`,
+                    `/api/messages/${encodeURIComponent(messageId)}/unlock`,
                     {
                         method: "POST",
 
@@ -177,44 +653,75 @@ if (urlParams.get("id")) {
                     }
                 );
 
-                const data = await response.json();
+
+                const data =
+                    await response.json();
+
 
                 if (!response.ok) {
 
-                    messageElement.textContent =
-                        data.error || "Could not unlock message.";
+                    messageElement.className = "error";
 
-                    timerElement.textContent = "";
+                    messageElement.textContent =
+                        data.error ||
+                        "Could not unlock message.";
+
+                    button.disabled = false;
 
                     return;
                 }
 
+
+                /*
+                 * Store the unlocked message temporarily.
+                 */
+
                 sessionStorage.setItem(
-    "unlockedMessage",
-    data.message
-);
+                    "unlockedMessage",
+                    data.message
+                );
 
-sessionStorage.setItem(
-    "messageExpiresAt",
-    data.expiresAt
-);
 
-window.location.href = "/message.html";
+                sessionStorage.setItem(
+                    "messageExpiresAt",
+                    data.expiresAt
+                );
+
+
+                /*
+                 * Move to the separate message page.
+                 */
+
+                window.location.href =
+                    "/message.html";
+
+
             } catch (error) {
+
+                messageElement.className = "error";
 
                 messageElement.textContent =
                     "Could not connect to the server.";
+
+                button.disabled = false;
             }
         }
+
+
+        /*
+         * Existing timer function retained.
+         */
 
         function startTimer(expiresAt) {
 
             clearInterval(timerInterval);
 
+
             function updateTimer() {
 
                 const remaining =
                     expiresAt - Date.now();
+
 
                 if (remaining <= 0) {
 
@@ -230,14 +737,18 @@ window.location.href = "/message.html";
                     return;
                 }
 
+
                 const totalSeconds =
                     Math.ceil(remaining / 1000);
+
 
                 const minutes =
                     Math.floor(totalSeconds / 60);
 
+
                 const seconds =
                     totalSeconds % 60;
+
 
                 document.getElementById("timer")
                     .textContent =
@@ -246,16 +757,15 @@ window.location.href = "/message.html";
                         .padStart(2, "0")}`;
             }
 
+
             updateTimer();
+
 
             timerInterval =
                 setInterval(updateTimer, 1000);
         }
 
-    
+    </script>
 
-</script>
-
-</div>
 </body>
 </html>
